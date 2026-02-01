@@ -1,18 +1,48 @@
-import { useState } from 'react'
-import './App.css'
-import Login from './page/Login'
-import SignUp from './page/signUp'
-import Application from './page/Application'
-import Navbar from './components/Navbar'
+import { Routes, Route } from 'react-router-dom';
+import './App.css';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Login from './page/Login';
+import SignUp from './page/signUp';
+import Application from './page/Application';
+import Admins from './page/AdminDashBoard';
 
 function App() {
-  // const [count, setCount] = useState(0)
+    return (
+        <AuthProvider>
+            <Routes>
+                {/* Public Routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
 
-  return (
-    <>
-      <Application/>
-    </>
-  )
+                {/* Protected Routes */}
+                <Route
+                    path="/"
+                    element={
+                        <ProtectedRoute>
+                            <Admins />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/application"
+                    element={
+                        <ProtectedRoute>
+                            <Application />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin"
+                    element={
+                        <ProtectedRoute>
+                            <Admins />
+                        </ProtectedRoute>
+                    }
+                />
+            </Routes>
+        </AuthProvider>
+    );
 }
 
-export default App
+export default App;

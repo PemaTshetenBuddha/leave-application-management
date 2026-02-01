@@ -1,34 +1,31 @@
-import { CalendarDays } from "lucide-react"
-export default function applicationFrom() {
-    return <div className=" bg-linear-to-b from-[#e5b3f6] to-[#b9e4eb] text-white h-screen flex flex-col items-center justify-center">
-                  
-            <div className="bg-linear-to-b from-[#b9e4eb] to-[#e5b3f6] py-14 px-8 rounded-2xl shadow-2xl w-[500px] grid grid-cols-[145px_1fr] gap-y-6 items-center text-gray-700">
-            <label className="font-bold">Leaving Date : </label>
-            <input className="outline-none border-2 border-gray-200 p-2" type="date"></input>
+export default function ApplicationForm() {
+    return (
+        <div className="bg-slate-50 text-slate-900 h-screen flex flex-col items-center justify-center font-sans">
+            <div className="bg-white p-10 rounded-xl shadow-lg border border-slate-200 w-[500px] grid grid-cols-[145px_1fr] gap-y-6 items-center">
+                
+                <h2 className="col-span-2 text-2xl font-bold text-slate-800 mb-2">Leave Application</h2>
 
+                <label className="text-sm font-semibold text-slate-600">Leaving Date</label>
+                <input className="outline-none border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" type="date" />
 
-            <label className="font-bold">Reporting Date : </label>
-            <input className="outline-none border-2 border-gray-200 p-2" type="date"></input>
+                <label className="text-sm font-semibold text-slate-600">Reporting Date</label>
+                <input className="outline-none border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" type="date" />
 
+                <label className="text-sm font-semibold text-slate-600">Subject</label>
+                <input className="outline-none border border-slate-300 rounded-md p-2 w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all" type="text" />
 
-            <label className="font-bold">Subject :</label>
-            <textarea className="outline-none border-2 border-gray-200 p-2 w-full" type="text"></textarea>
+                <div className="col-span-2 flex flex-col gap-2">
+                    <label className="text-sm font-semibold text-slate-600">Reason</label>
+                    <textarea
+                        className="outline-none border border-slate-300 rounded-md p-3 text-slate-800 w-full h-32 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-none"
+                        placeholder="Please describe the reason for your leave..."
+                    />
+                </div>
 
-            <div className="col-span-2 flex flex-col gap-2">
-                <label className="font-bold">Reason :</label>
-                <textarea
-                    className="outline-none border-2 border-gray-200 p-2 text-black w-full h-32"
-                    placeholder="Type your reason here..."
-                />
+                <button className="mt-4 col-span-2 w-full bg-indigo-600 text-white font-bold py-3 rounded-lg shadow-md hover:bg-indigo-700 active:scale-[0.98] transition-all duration-200 cursor-pointer">
+                    Submit Application
+                </button>
             </div>
-
-
-            <button className=" font-bold cursor-pointer col-span-2 justify-self-center shadow-2xl bg-linear-to-b from-[#b9e4eb] to-[#e5b3f6] border-2 border-gray-400 p-2 px-10 rounded-2xl text-purple-500 
-                hover:scale-105 hover:brightness-110 
-                active:scale-95 
-                transition-all duration-100">
-                Summit
-            </button>
         </div>
-    </div>
+    );
 }
