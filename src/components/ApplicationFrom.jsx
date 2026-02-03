@@ -1,5 +1,17 @@
 export default function ApplicationForm() {
+    // const info = [
+    //   {"leave applicaiton","leaving date"},
+    //    { "reporting date",
+    //     "subject",
+    //     "reason"},
+       
+    // ]
     return (
+        // <div>
+        //     {info.map((item)=>{
+        //        return <p key={item.name}>{item.name}</p>
+        //     })}
+        // </div>
         <div className="bg-slate-50 text-slate-900 h-screen flex flex-col items-center justify-center font-sans">
             <div className="bg-white p-10 rounded-xl shadow-lg border border-slate-200 w-[500px] grid grid-cols-[145px_1fr] gap-y-6 items-center">
                 
