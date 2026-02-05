@@ -1,5 +1,5 @@
 import {Mail, LockKeyhole,UserRound,User} from "lucide-react"
-
+import { Link } from "react-router-dom"
 
 export default function SignUpForm(){
     return <div className="w-full min-h-screen flex bg-linear-to-b from-[#e5b3f6] to-[#b9e4eb] text-white">
@@ -26,7 +26,7 @@ export default function SignUpForm(){
             </div>
         </div>
         <div className="mt-6 flex text-[#366496]">
-            <a href="#">Go to LogIn</a>
+            <Link to='/login'>Go to LogIn</Link>
             
         </div>
             <button className="bg-[#2a4e75] w-100 py-2 rounded mt-4 transition-all hover:bg-[#366496] active:scale-95 active:shadow-inner">

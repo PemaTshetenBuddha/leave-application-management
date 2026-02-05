@@ -1,10 +1,17 @@
+import { useState } from 'react'
 import Admins from '../components/HightLight'
 import Navbar from '../components/Navbar'
-import Table from '../components/Table'
+import LeaveTables from '../components/Table'
+import EmployeeDetail from '../components/EmployeeDetail';
+
 export default function AdminsD(){
-    return <>
+
+   
+    return (
+        <>
     <Navbar/>
     <Admins/>
-    <Table/>
+    <LeaveTables  />
     </>
+    )
 }

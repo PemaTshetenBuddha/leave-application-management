@@ -1,7 +1,8 @@
+import { Link } from "react-router-dom"
 import {Mail, LockKeyhole,UserRound} from "lucide-react"
 
 export default function LoginForm(){
-    return <div className="w-full min-h-screen flex bg-linear-to-b from-[#e5b3f6] to-[#b9e4eb] text-white">
+    return <div className="w-full min-h-screen flex  text-black">
     <form className=" flex-col flex justify-start m-auto w-[500px] items-center gap-1" action="">
         <UserRound className="size-12" />
         <h1 className="font-extralight font-mono text-5xl text-center mb-4">Users Login</h1>
@@ -16,7 +17,7 @@ export default function LoginForm(){
             </div>
         </div>
         <div className="mt-6 flex gap-37 text-[#366496]">
-            <a href="#">Create New Acc</a>
+            <Link to="/signUp">Create New Acc</Link>
             <a href="#">Forgot Password?</a>
             
         </div>
