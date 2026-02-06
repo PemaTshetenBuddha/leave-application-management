@@ -11,6 +11,7 @@ import userTable from './page/UserTable';
 import EmployeeDetail from './components/EmployeeDetail';
 import HightLight from './components/HightLight';
 import AdminsD from './page/AdminDashBoard';
+import ForgotPassword from './page/ForgotPassword';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
        <Route path="/" element={<Login />} /> 
       <Route path='login' element={<Login/>}></Route>
       <Route path='signup' element={<SignUp/>}></Route>
+      <Route path='forgot-password' element={<ForgotPassword/>}></Route>
       <Route path='Application' element={<Application/>}></Route>
       <Route path='Admins' element={<Admins/>}></Route>
       <Route path='userProfile' element={<UserProfilePage/> }></Route>
