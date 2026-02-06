@@ -2,13 +2,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { Eye } from "lucide-react";
 import EmployeeDetails from "./EmployeeDetail";
+import resolveProfilePic from "../utils/resolveProfilePic";
 
 const USER_APPLICATIONS_URL = "http://localhost:5000/api/applications/my";
+const USER_PROFILE_URL = "http://localhost:5000/api/users/me";
 
 export default function UserTable({ refreshToken = 0 }) {
     const [Edetails, setEdetails] = useState(false);
     const [selectedApplication, setSelectedApplication] = useState(null);
     const [applications, setApplications] = useState([]);
+    const [currentUser, setCurrentUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -21,15 +24,25 @@ export default function UserTable({ refreshToken = 0 }) {
             setIsLoading(true);
             setError("");
             try {
-                const response = await fetch(USER_APPLICATIONS_URL, { credentials: "include" });
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => null);
+                const [applicationsResponse, userResponse] = await Promise.all([
+                    fetch(USER_APPLICATIONS_URL, { credentials: "include" }),
+                    fetch(USER_PROFILE_URL, { credentials: "include" }),
+                ]);
+
+                if (!applicationsResponse.ok) {
+                    const errorData = await applicationsResponse.json().catch(() => null);
                     const message = errorData?.message || "Unable to load applications.";
                     throw new Error(message);
                 }
-                const data = await response.json().catch(() => []);
+
+                const [applicationsData, userData] = await Promise.all([
+                    applicationsResponse.json().catch(() => []),
+                    userResponse.ok ? userResponse.json().catch(() => null) : Promise.resolve(null),
+                ]);
+
                 if (isMounted) {
-                    setApplications(Array.isArray(data) ? data : []);
+                    setApplications(Array.isArray(applicationsData) ? applicationsData : []);
+                    setCurrentUser(userData);
                 }
             } catch (err) {
                 if (isMounted) {
@@ -64,6 +77,17 @@ export default function UserTable({ refreshToken = 0 }) {
                 shortReason: truncateReason(application.reason),
                 date: startDate ? startDate.toLocaleDateString() : "-",
                 status: application.status,
+                avatarSrc: resolveProfilePic(
+                    application.user?.profilePicUrl ||
+                        application.user?.profilePic ||
+                        application.profilePicUrl ||
+                        application.profilePic ||
+                        application.userProfilePicUrl ||
+                        application.userProfilePic ||
+                        currentUser?.profilePicUrl ||
+                        currentUser?.profilePic
+                ),
+                userName: application.user?.name || application.userName || currentUser?.name || "Employee",
                 raw: application,
             };
         });
@@ -73,7 +97,7 @@ export default function UserTable({ refreshToken = 0 }) {
         <main className="p-8 mt-10 bg-slate-50 min-h-screen font-sans">
             <div className="max-w-full mx-auto bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
                 <div className="flex bg-slate-50 border-b border-slate-200 p-4 text-xs uppercase tracking-wider font-bold text-slate-500">
-                    <p className="flex-1">Leave Subject</p>
+                    <p className="flex-1">Employee</p>
                     <p className="flex-[1.5]">Reason for Leave</p>
                     <p className="flex-1">Applied Date</p>
                     <p className="w-34 text-center">Status</p>
@@ -92,7 +116,18 @@ export default function UserTable({ refreshToken = 0 }) {
                             key={row.id}
                             className="flex p-4 items-center border-b border-slate-100 hover:bg-slate-50"
                         >
-                            <p className="flex-1 text-slate-600 text-sm">{row.subject}</p>
+                            <div className="flex flex-1 items-center gap-3">
+                                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 overflow-hidden ring-1 ring-slate-200">
+                                    {row.avatarSrc ? (
+                                        <img className="h-full w-full object-cover" src={row.avatarSrc} alt={row.userName} />
+                                    ) : (
+                                        <span className="text-xs font-semibold text-slate-500">
+                                            {row.userName?.charAt(0) || "?"}
+                                        </span>
+                                    )}
+                                </span>
+                                <p className="text-sm font-semibold text-slate-700">{row.userName}</p>
+                            </div>
                             <p className="flex-[1.5] text-slate-500 text-sm italic pr-4" title={row.reason}>
                                 "{row.shortReason}"
                             </p>
@@ -132,7 +167,11 @@ export default function UserTable({ refreshToken = 0 }) {
                     className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm"
                     onClick={hideEdetails}
                 >
-                    <EmployeeDetails application={selectedApplication} onClose={hideEdetails} />
+                    <EmployeeDetails
+                        application={selectedApplication}
+                        fallbackUser={currentUser}
+                        onClose={hideEdetails}
+                    />
                 </div>
             )}
         </main>

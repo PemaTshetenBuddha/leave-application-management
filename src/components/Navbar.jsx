@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { CircleUser, LogOut, UserCircle } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import UserProfile from "./UserProfile"
+import resolveProfilePic from "../utils/resolveProfilePic"
 
 const USER_URL = "http://localhost:5000/api/users/me"
 const LOGOUT_URL = "http://localhost:5000/api/auth/logout"
@@ -12,6 +13,8 @@ export default function Navbar() {
     const [showMenu, setShowMenu] = useState(false)
     const [user, setUser] = useState(null)
     const [menuError, setMenuError] = useState("")
+
+    const avatarSrc = resolveProfilePic(user?.profilePicUrl || user?.profilePic)
 
     useEffect(() => {
         let isMounted = true
@@ -80,7 +83,13 @@ export default function Navbar() {
                             <span className="text-sm font-medium hidden md:block">
                                 {user?.name || "User"}
                             </span>
-                            <CircleUser size={32} strokeWidth={1.5} />
+                            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 overflow-hidden ring-1 ring-slate-200">
+                                {avatarSrc ? (
+                                    <img className="h-full w-full object-cover" src={avatarSrc} alt={user?.name || "User"} />
+                                ) : (
+                                    <CircleUser size={32} strokeWidth={1.5} />
+                                )}
+                            </span>
                         </button>
 
                         {showMenu && (

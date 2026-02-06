@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Eye } from "lucide-react";
 
 import EmployeeDetails from "./EmployeeDetail";
+import resolveProfilePic from "../utils/resolveProfilePic";
 
 const ADMIN_APPLICATIONS_URL = "http://localhost:5000/api/applications";
 
@@ -75,6 +76,7 @@ export default function LeaveTables() {
             return {
                 id: application._id,
                 name: application.user?.name || application.userName || "Employee",
+                avatarSrc: resolveProfilePic(application.user?.profilePicUrl || application.user?.profilePic),
                 subject: application.subject,
                 reason: application.reason,
                 shortReason: truncateReason(application.reason),
@@ -89,7 +91,7 @@ export default function LeaveTables() {
         <main className="p-8 mt-10 bg-slate-50 min-h-screen font-sans">
             <div className="max-w-full mx-auto bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
                 <div className="flex bg-slate-50 border-b border-slate-200 p-4 text-xs uppercase tracking-wider font-bold text-slate-500">
-                    <p className="flex-1">Employee Name</p>
+                    <p className="flex-1">Employee</p>
                     <p className="flex-1">Leave Subject</p>
                     <p className="flex-[1.5]">Reason for Leave</p>
                     <p className="flex-1">Applied Date</p>
@@ -109,7 +111,18 @@ export default function LeaveTables() {
                             key={row.id}
                             className="flex p-4 items-center border-b border-slate-100 hover:bg-slate-50"
                         >
-                            <p className="flex-1 font-semibold text-slate-800">{row.name}</p>
+                            <div className="flex flex-1 items-center gap-3">
+                                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 overflow-hidden ring-1 ring-slate-200">
+                                    {row.avatarSrc ? (
+                                        <img className="h-full w-full object-cover" src={row.avatarSrc} alt={row.name} />
+                                    ) : (
+                                        <span className="text-xs font-semibold text-slate-500">
+                                            {row.name?.charAt(0) || "?"}
+                                        </span>
+                                    )}
+                                </span>
+                                <p className="font-semibold text-slate-800">{row.name}</p>
+                            </div>
                             <p className="flex-1 text-slate-600 text-sm">{row.subject}</p>
                             <p className="flex-[1.5] text-slate-500 text-sm italic pr-4" title={row.reason}>
                                 "{row.shortReason}"

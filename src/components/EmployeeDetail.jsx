@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
 import { Calendar, FileText, User, MessageSquare } from "lucide-react";
+import resolveProfilePic from "../utils/resolveProfilePic";
 
 const APPLICATIONS_URL = "http://localhost:5000/api/applications";
 
-export default function EmployeeDetails({ application, onClose, canUpdateStatus = false, onStatusUpdated }) {
+export default function EmployeeDetails({
+    application,
+    fallbackUser = null,
+    onClose,
+    canUpdateStatus = false,
+    onStatusUpdated,
+}) {
     const [currentStatus, setCurrentStatus] = useState(application?.status || "-");
     const [isUpdating, setIsUpdating] = useState(false);
     const [updateError, setUpdateError] = useState("");
@@ -17,14 +24,24 @@ export default function EmployeeDetails({ application, onClose, canUpdateStatus 
         setIsConfirmOpen(false);
     }, [application]);
 
+    const resolvedUser = application?.user && typeof application.user === "object" ? application.user : null;
+    const effectiveUser = resolvedUser || fallbackUser;
+
     const leaveDetail = {
-        Name: application?.user?.name || application?.userName || "Employee",
+        Name: effectiveUser?.name || application?.userName || "Employee",
         LeavingDate: application?.startDate ? new Date(application.startDate).toLocaleDateString() : "-",
         ReportingDate: application?.endDate ? new Date(application.endDate).toLocaleDateString() : "-",
         Subject: application?.subject || "-",
         Reason: application?.reason || "-",
         Status: currentStatus || "-",
     };
+
+    const avatarSrc = resolveProfilePic(
+        effectiveUser?.profilePicUrl ||
+            effectiveUser?.profilePic ||
+            application?.profilePicUrl ||
+            application?.profilePic
+    );
 
     const handleStatusChange = async (status) => {
         if (!application?._id || isUpdating) {
@@ -111,8 +128,12 @@ export default function EmployeeDetails({ application, onClose, canUpdateStatus 
             {/* Header */}
             <div className="flex items-center justify-between gap-4 bg-slate-900 p-6 text-white">
                 <div className="flex items-center gap-4">
-                    <div className="bg-slate-700 p-3 rounded-full">
-                        <User size={24} />
+                    <div className="h-12 w-12 rounded-full bg-slate-700 text-white overflow-hidden flex items-center justify-center">
+                        {avatarSrc ? (
+                            <img className="h-full w-full object-cover" src={avatarSrc} alt={leaveDetail.Name} />
+                        ) : (
+                            <User size={24} />
+                        )}
                     </div>
                     <div>
                         <h1 className="text-xl font-bold tracking-tight">{leaveDetail.Name}</h1>

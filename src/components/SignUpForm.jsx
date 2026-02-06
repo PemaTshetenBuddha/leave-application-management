@@ -13,6 +13,91 @@ export default function SignUpForm() {
     const [error, setError] = useState("")
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
+    const [profilePic, setProfilePic] = useState("")
+    const [profilePicContentType, setProfilePicContentType] = useState("")
+    const [profilePicPreview, setProfilePicPreview] = useState("")
+    const [profilePicError, setProfilePicError] = useState("")
+
+    const compressImage = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader()
+            reader.onerror = () => reject(new Error("Unable to read image."))
+            reader.onload = () => {
+                const img = new Image()
+                img.onerror = () => reject(new Error("Unable to load image."))
+                img.onload = () => {
+                    const maxBytes = 5 * 1024 * 1024
+                    let scale = Math.min(1, 1024 / Math.max(img.width, img.height))
+                    let quality = 0.85
+                    const canvas = document.createElement("canvas")
+                    const ctx = canvas.getContext("2d")
+                    if (!ctx) {
+                        reject(new Error("Unable to process image."))
+                        return
+                    }
+
+                    const getByteSize = (dataUrl) => {
+                        const base64 = dataUrl.split(",")[1] || ""
+                        return Math.ceil((base64.length * 3) / 4)
+                    }
+
+                    let dataUrl = ""
+                    while (scale >= 0.2) {
+                        canvas.width = Math.round(img.width * scale)
+                        canvas.height = Math.round(img.height * scale)
+                        ctx.clearRect(0, 0, canvas.width, canvas.height)
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+                        dataUrl = canvas.toDataURL(file.type || "image/jpeg", quality)
+
+                        if (getByteSize(dataUrl) <= maxBytes) {
+                            resolve(dataUrl)
+                            return
+                        }
+
+                        if (quality > 0.5) {
+                            quality -= 0.1
+                        } else {
+                            scale *= 0.85
+                        }
+                    }
+
+                    reject(new Error("Profile photo is still too large after compression."))
+                }
+                img.src = reader.result
+            }
+            reader.readAsDataURL(file)
+        })
+    }
+
+    const handleProfilePicChange = async (event) => {
+        const file = event.target.files?.[0]
+        if (!file) {
+            setProfilePic("")
+            setProfilePicContentType("")
+            setProfilePicPreview("")
+            setProfilePicError("")
+            return
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            setProfilePic("")
+            setProfilePicContentType("")
+            setProfilePicPreview("")
+            setProfilePicError("Profile photo must be 5MB or smaller before upload.")
+            return
+        }
+
+        setProfilePicError("")
+        setProfilePicContentType(file.type || "image/jpeg")
+        try {
+            const dataUrl = await compressImage(file)
+            const base64Value = dataUrl.split(",")[1] || ""
+            setProfilePic(base64Value)
+            setProfilePicPreview(dataUrl)
+        } catch (err) {
+            setProfilePicError(err.message || "Unable to process profile photo.")
+        }
+    }
 
     const handleSubmit = async (event) => {
         event.preventDefault()
@@ -26,13 +111,24 @@ export default function SignUpForm() {
         setIsSubmitting(true)
 
         try {
+            const payload = {
+                name,
+                email,
+                password,
+            }
+
+            if (profilePic) {
+                payload.profilePic = profilePic
+                payload.profilePicContentType = profilePicContentType
+            }
+
             const response = await fetch(SIGNUP_URL, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 credentials: "include",
-                body: JSON.stringify({ name, email, password }),
+                body: JSON.stringify(payload),
             })
 
             if (!response.ok) {
@@ -151,6 +247,28 @@ export default function SignUpForm() {
                                         required
                                     />
                                 </div>
+                            </label>
+                            <label className="block text-sm font-medium text-slate-600">
+                                Profile photo (optional)
+                                <div className="mt-2 flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                                    <User className="size-4 text-slate-400" />
+                                    <input
+                                        className="w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-slate-700 hover:file:bg-slate-200"
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleProfilePicChange}
+                                    />
+                                </div>
+                                {profilePicPreview ? (
+                                    <img
+                                        className="mt-3 h-16 w-16 rounded-full object-cover ring-2 ring-slate-200"
+                                        src={profilePicPreview}
+                                        alt="Profile preview"
+                                    />
+                                ) : null}
+                                {profilePicError ? (
+                                    <p className="mt-2 text-xs text-rose-500">{profilePicError}</p>
+                                ) : null}
                             </label>
                             <label className="flex items-center gap-2 text-sm text-slate-500">
                                 <input
