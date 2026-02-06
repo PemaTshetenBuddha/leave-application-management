@@ -1,27 +1,35 @@
 import { Calendar, FileText, User, MessageSquare } from "lucide-react";
 
-export default function EmployeeDetails() {
+export default function EmployeeDetails({ application, onClose }) {
     const leaveDetail = {
-        Name: "Pema Tsheten",
-        LeavingDate: "12/12/24",
-        ReportingDate: "15/12/24",
-        Subject: "Sick Leave",
-        Reason: "I am writing to formally request a sick leave due to a severe flu. My doctor has advised complete rest for three days to ensure a full recovery."
+        Name: application?.user?.name || application?.userName || "Employee",
+        LeavingDate: application?.startDate ? new Date(application.startDate).toLocaleDateString() : "-",
+        ReportingDate: application?.endDate ? new Date(application.endDate).toLocaleDateString() : "-",
+        Subject: application?.subject || "-",
+        Reason: application?.reason || "-",
+        Status: application?.status || "-",
     }
-    
+
     return (
-       
-        <div className="w-full max-w-md bg-white rounded-xl overflow-hidden">
-            
+        <div className="w-auto min-w-[28rem] max-w-[90vw] max-h-[90vh] bg-white rounded-xl overflow-hidden ring-1 ring-slate-200 shadow-xl">
             {/* Header */}
-            <div className="flex items-center gap-4 bg-slate-900 p-6 text-white">
-                <div className="bg-slate-700 p-3 rounded-full">
-                    <User size={24} />
+            <div className="flex items-center justify-between gap-4 bg-slate-900 p-6 text-white">
+                <div className="flex items-center gap-4">
+                    <div className="bg-slate-700 p-3 rounded-full">
+                        <User size={24} />
+                    </div>
+                    <div>
+                        <h1 className="text-xl font-bold tracking-tight">{leaveDetail.Name}</h1>
+                        <p className="text-slate-400 text-sm">Employee Leave Record</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 className="text-xl font-bold tracking-tight">{leaveDetail.Name}</h1>
-                    <p className="text-slate-400 text-sm">Employee Leave Record</p>
-                </div>
+                <button
+                    type="button"
+                    onClick={onClose}
+                    className="text-slate-300 hover:text-white text-sm"
+                >
+                    Close
+                </button>
             </div>
 
             {/* Dates Grid */}
@@ -56,10 +64,13 @@ export default function EmployeeDetails() {
                 <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Reason for Leave</p>
                 <div className="flex gap-2">
                     <MessageSquare size={14} className="text-blue-500 mt-1 shrink-0" />
-                    <p className="text-slate-600 text-sm leading-relaxed">
-                        {leaveDetail.Reason}
-                    </p>
+                    <p className="text-slate-600 text-sm leading-relaxed">{leaveDetail.Reason}</p>
                 </div>
+            </div>
+
+            <div className="p-5 border-t border-slate-100">
+                <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Status</p>
+                <p className="text-sm font-semibold text-slate-700 capitalize">{leaveDetail.Status}</p>
             </div>
         </div>
     )
