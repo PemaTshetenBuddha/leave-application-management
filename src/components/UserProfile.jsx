@@ -9,10 +9,16 @@ export default function UserProfile({ user, onUserUpdated, onClose }) {
   const [formValues, setFormValues] = useState({
     name: user?.name || "",
     email: user?.email || "",
-    password: "",
+  })
+  const [passwordValues, setPasswordValues] = useState({
+    currentPassword: "",
+    newPassword: "",
   })
   const [error, setError] = useState("")
+  const [passwordError, setPasswordError] = useState("")
+  const [passwordMessage, setPasswordMessage] = useState("")
   const [isSaving, setIsSaving] = useState(false)
+  const [isPasswordSaving, setIsPasswordSaving] = useState(false)
 
   useEffect(() => {
     setCurrentUser(user)
@@ -84,6 +90,11 @@ export default function UserProfile({ user, onUserUpdated, onClose }) {
     setFormValues((prev) => ({ ...prev, [name]: value }))
   }
 
+  const handlePasswordChange = (event) => {
+    const { name, value } = event.target
+    setPasswordValues((prev) => ({ ...prev, [name]: value }))
+  }
+
   const handleSave = async (event) => {
     event.preventDefault()
     setError("")
@@ -93,10 +104,6 @@ export default function UserProfile({ user, onUserUpdated, onClose }) {
       const payload = {
         name: formValues.name,
         email: formValues.email,
-      }
-
-      if (formValues.password) {
-        payload.password = formValues.password
       }
 
       const response = await fetch(USER_URL, {
@@ -118,11 +125,51 @@ export default function UserProfile({ user, onUserUpdated, onClose }) {
       setCurrentUser(updatedUser)
       onUserUpdated?.(updatedUser)
       setIsEditing(false)
-      setFormValues((prev) => ({ ...prev, password: "" }))
     } catch (saveError) {
       setError(saveError.message || "Unable to update profile.")
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  const handlePasswordSave = async (event) => {
+    event.preventDefault()
+    setPasswordError("")
+    setPasswordMessage("")
+
+    if (!passwordValues.currentPassword || !passwordValues.newPassword) {
+      setPasswordError("Please enter your current and new password.")
+      return
+    }
+
+    setIsPasswordSaving(true)
+
+    try {
+      const response = await fetch(`${USER_URL}/password`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          currentPassword: passwordValues.currentPassword,
+          newPassword: passwordValues.newPassword,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null)
+        const message = errorData?.message || "Unable to update password."
+        throw new Error(message)
+      }
+
+      await response.json().catch(() => ({}))
+      setPasswordMessage("Password updated successfully.")
+      setPasswordValues({ currentPassword: "", newPassword: "" })
+    } catch (passwordSaveError) {
+      setPasswordError(passwordSaveError.message || "Unable to update password.")
+    } finally {
+      setIsPasswordSaving(false)
     }
   }
 
@@ -165,56 +212,86 @@ export default function UserProfile({ user, onUserUpdated, onClose }) {
             })}
           </div>
         ) : (
-          <form className="space-y-4" onSubmit={handleSave}>
-            <label className="block text-sm font-medium text-gray-600">
-              Name
-              <input
-                className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-2 text-gray-800 focus:border-indigo-500 focus:outline-none"
-                name="name"
-                value={formValues.name}
-                onChange={handleChange}
-                required
-              />
-            </label>
-            <label className="block text-sm font-medium text-gray-600">
-              Email
-              <input
-                className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-2 text-gray-800 focus:border-indigo-500 focus:outline-none"
-                name="email"
-                type="email"
-                value={formValues.email}
-                onChange={handleChange}
-                required
-              />
-            </label>
-            <label className="block text-sm font-medium text-gray-600">
-              New Password
-              <input
-                className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-2 text-gray-800 focus:border-indigo-500 focus:outline-none"
-                name="password"
-                type="password"
-                value={formValues.password}
-                onChange={handleChange}
-                placeholder="Leave blank to keep current password"
-              />
-            </label>
-            <div className="flex items-center justify-between gap-3">
+          <div className="space-y-6">
+            <form className="space-y-4" onSubmit={handleSave}>
+              <label className="block text-sm font-medium text-gray-600">
+                Name
+                <input
+                  className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-2 text-gray-800 focus:border-indigo-500 focus:outline-none"
+                  name="name"
+                  value={formValues.name}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
+              <label className="block text-sm font-medium text-gray-600">
+                Email
+                <input
+                  className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-2 text-gray-800 focus:border-indigo-500 focus:outline-none"
+                  name="email"
+                  type="email"
+                  value={formValues.email}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
+              <div className="flex items-center justify-between gap-3">
+                <button
+                  type="submit"
+                  className="flex-1 rounded-lg bg-indigo-600 px-4 py-2 text-white font-semibold hover:bg-indigo-700 disabled:opacity-60"
+                  disabled={isSaving}
+                >
+                  {isSaving ? "Saving..." : "Save Changes"}
+                </button>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="flex-1 rounded-lg border border-gray-200 px-4 py-2 text-gray-600 hover:bg-gray-50"
+                >
+                  Close
+                </button>
+              </div>
+            </form>
+            <form className="space-y-4 rounded-lg border border-gray-200 bg-gray-50/40 p-4" onSubmit={handlePasswordSave}>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-700">Change password</h3>
+                <p className="text-xs text-gray-500">Use your current password to set a new one.</p>
+              </div>
+              <label className="block text-sm font-medium text-gray-600">
+                Current password
+                <input
+                  className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-2 text-gray-800 focus:border-indigo-500 focus:outline-none"
+                  name="currentPassword"
+                  type="password"
+                  value={passwordValues.currentPassword}
+                  onChange={handlePasswordChange}
+                  placeholder="Enter current password"
+                  required
+                />
+              </label>
+              <label className="block text-sm font-medium text-gray-600">
+                New password
+                <input
+                  className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-2 text-gray-800 focus:border-indigo-500 focus:outline-none"
+                  name="newPassword"
+                  type="password"
+                  value={passwordValues.newPassword}
+                  onChange={handlePasswordChange}
+                  placeholder="Enter new password"
+                  required
+                />
+              </label>
+              {passwordError ? <p className="text-sm text-rose-600">{passwordError}</p> : null}
+              {passwordMessage ? <p className="text-sm text-emerald-600">{passwordMessage}</p> : null}
               <button
                 type="submit"
-                className="flex-1 rounded-lg bg-indigo-600 px-4 py-2 text-white font-semibold hover:bg-indigo-700 disabled:opacity-60"
-                disabled={isSaving}
+                className="w-full rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+                disabled={isPasswordSaving}
               >
-                {isSaving ? "Saving..." : "Save Changes"}
+                {isPasswordSaving ? "Updating..." : "Update Password"}
               </button>
-              <button
-                type="button"
-                onClick={onClose}
-                className="flex-1 rounded-lg border border-gray-200 px-4 py-2 text-gray-600 hover:bg-gray-50"
-              >
-                Close
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         )}
       </div>
     </div>
