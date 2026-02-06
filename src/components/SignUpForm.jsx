@@ -12,6 +12,7 @@ export default function SignUpForm() {
     const [confirmPassword, setConfirmPassword] = useState("")
     const [error, setError] = useState("")
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
 
     const handleSubmit = async (event) => {
         event.preventDefault()
@@ -129,7 +130,7 @@ export default function SignUpForm() {
                                     <LockKeyhole className="size-4 text-slate-400" />
                                     <input
                                         className="w-full bg-transparent text-sm text-slate-900 outline-none"
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         placeholder="Create a password"
                                         value={password}
                                         onChange={(event) => setPassword(event.target.value)}
@@ -143,13 +144,22 @@ export default function SignUpForm() {
                                     <LockKeyhole className="size-4 text-slate-400" />
                                     <input
                                         className="w-full bg-transparent text-sm text-slate-900 outline-none"
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         placeholder="Re-enter your password"
                                         value={confirmPassword}
                                         onChange={(event) => setConfirmPassword(event.target.value)}
                                         required
                                     />
                                 </div>
+                            </label>
+                            <label className="flex items-center gap-2 text-sm text-slate-500">
+                                <input
+                                    type="checkbox"
+                                    className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                                    checked={showPassword}
+                                    onChange={(event) => setShowPassword(event.target.checked)}
+                                />
+                                Show password
                             </label>
                             <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
                                 <Link className="text-indigo-600 hover:text-indigo-700" to="/login">

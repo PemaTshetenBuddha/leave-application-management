@@ -2,15 +2,45 @@ import { Mail, Shield } from "lucide-react"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 
+const FORGOT_PASSWORD_URL = "http://localhost:5000/api/auth/forgot-password"
+
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("")
   const [status, setStatus] = useState("idle")
   const [message, setMessage] = useState("")
+  const [error, setError] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
-    setStatus("success")
-    setMessage("If an account exists, a reset link will be sent to your email shortly.")
+    setStatus("idle")
+    setMessage("")
+    setError("")
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch(FORGOT_PASSWORD_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null)
+        const errorMessage = errorData?.message || "Unable to send reset link."
+        throw new Error(errorMessage)
+      }
+
+      await response.json().catch(() => ({}))
+      setStatus("success")
+      setMessage("If an account exists, a reset link will be sent to your email shortly.")
+    } catch (err) {
+      setError(err.message || "Unable to send reset link.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -64,6 +94,7 @@ export default function ForgotPasswordForm() {
                   />
                 </div>
               </label>
+              {error ? <p className="text-sm text-rose-600">{error}</p> : null}
               {message ? (
                 <p className="text-sm text-emerald-600">{message}</p>
               ) : (
@@ -73,9 +104,10 @@ export default function ForgotPasswordForm() {
               )}
               <button
                 type="submit"
-                className="w-full rounded-xl bg-slate-900 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                className="w-full rounded-xl bg-slate-900 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:opacity-60"
+                disabled={isSubmitting}
               >
-                Send reset link
+                {isSubmitting ? "Sending..." : "Send reset link"}
               </button>
               <div className="text-sm text-slate-500">
                 Remember your password?{" "}

@@ -10,6 +10,7 @@ export default function LoginForm() {
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
 
     const resolveRole = (data) => {
         const roleValue = data?.role ?? data?.user?.role
@@ -121,13 +122,22 @@ export default function LoginForm() {
                                     <LockKeyhole className="size-4 text-slate-400" />
                                     <input
                                         className="w-full bg-transparent text-sm text-slate-900 outline-none"
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         placeholder="Enter your password"
                                         value={password}
                                         onChange={(event) => setPassword(event.target.value)}
                                         required
                                     />
                                 </div>
+                            </label>
+                            <label className="flex items-center gap-2 text-sm text-slate-500">
+                                <input
+                                    type="checkbox"
+                                    className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                    checked={showPassword}
+                                    onChange={(event) => setShowPassword(event.target.checked)}
+                                />
+                                Show password
                             </label>
                             <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
                                 <Link className="text-blue-600 hover:text-blue-700" to="/signup">
