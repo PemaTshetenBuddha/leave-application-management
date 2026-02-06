@@ -72,16 +72,19 @@ export default function ApplicationForm() {
         <main>
             <Navbar />
 
-            <button
-                onClick={() => {
-                    setVisible(true);
-                    setError("");
-                    setSuccessMessage("");
-                }}
-                className="ml-10 border-b-2 p-1 mt-4 relative text-indigo-600 font-medium hover:text-indigo-800"
-            >
-                Add Leave
-            </button>
+            <div className="mt-6 ml-10 flex items-center gap-4">
+                <button
+                    onClick={() => {
+                        setVisible(true);
+                        setError("");
+                        setSuccessMessage("");
+                    }}
+                    className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-indigo-200 transition hover:-translate-y-0.5 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                    <span className="text-base">＋</span>
+                    Add Leave
+                </button>
+            </div>
             {successMessage ? (
                 <p className="ml-10 mt-3 text-sm text-emerald-600">{successMessage}</p>
             ) : null}

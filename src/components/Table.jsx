@@ -15,6 +15,20 @@ export default function LeaveTables() {
 
     const hideDetails = () => SetShowDetails(false);
 
+    const handleStatusUpdated = (updatedApplication) => {
+        if (!updatedApplication?._id) {
+            return;
+        }
+        setApplications((prev) =>
+            prev.map((application) =>
+                application._id === updatedApplication._id ? { ...application, ...updatedApplication } : application
+            )
+        );
+        setSelectedApplication((prev) =>
+            prev?._id === updatedApplication._id ? { ...prev, ...updatedApplication } : prev
+        );
+    };
+
     useEffect(() => {
         let isMounted = true;
 
@@ -136,7 +150,12 @@ export default function LeaveTables() {
                     className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm"
                     onClick={hideDetails}
                 >
-                    <EmployeeDetails application={selectedApplication} onClose={hideDetails} />
+                    <EmployeeDetails
+                        application={selectedApplication}
+                        onClose={hideDetails}
+                        canUpdateStatus
+                        onStatusUpdated={handleStatusUpdated}
+                    />
                 </div>
             )}
         </main>
