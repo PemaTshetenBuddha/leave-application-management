@@ -68,7 +68,13 @@ export default function UserTable({ refreshToken = 0 }) {
     };
 
     const rows = useMemo(() => {
-        return applications.map((application) => {
+        const sortedApplications = [...applications].sort((a, b) => {
+            const aDate = new Date(a.createdAt || a.startDate || 0).getTime();
+            const bDate = new Date(b.createdAt || b.startDate || 0).getTime();
+            return bDate - aDate;
+        });
+
+        return sortedApplications.map((application) => {
             const startDate = application.startDate ? new Date(application.startDate) : null;
             return {
                 id: application._id,

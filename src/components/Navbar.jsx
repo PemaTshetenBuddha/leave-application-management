@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { CircleUser, LogOut, UserCircle } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import UserProfile from "./UserProfile"
@@ -13,6 +13,7 @@ export default function Navbar() {
     const [showMenu, setShowMenu] = useState(false)
     const [user, setUser] = useState(null)
     const [menuError, setMenuError] = useState("")
+    const menuRef = useRef(null)
 
     const avatarSrc = resolveProfilePic(user?.profilePicUrl || user?.profilePic)
 
@@ -40,6 +41,25 @@ export default function Navbar() {
             isMounted = false
         }
     }, [])
+
+    useEffect(() => {
+        if (!showMenu) {
+            return
+        }
+
+        const handleOutsideClick = (event) => {
+            if (!menuRef.current || menuRef.current.contains(event.target)) {
+                return
+            }
+            setShowMenu(false)
+        }
+
+        document.addEventListener("mousedown", handleOutsideClick)
+
+        return () => {
+            document.removeEventListener("mousedown", handleOutsideClick)
+        }
+    }, [showMenu])
 
     const handleLogout = async () => {
         setMenuError("")
@@ -74,7 +94,7 @@ export default function Navbar() {
                         <h1 className="text-slate-800 font-bold text-xl tracking-tight">Leave Management</h1>
                     </div>
 
-                    <div className="relative">
+                    <div className="relative" ref={menuRef}>
                         <button
                             type="button"
                             onClick={() => setShowMenu((prev) => !prev)}
