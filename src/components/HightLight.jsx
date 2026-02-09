@@ -1,6 +1,88 @@
-import { Plane,MailQuestionMark,FileCheck,Trash2} from "lucide-react"
-import { useState } from "react"
-export default function HightLight(){
+import { Plane, MailQuestionMark, FileCheck, Trash2 } from "lucide-react"
+import { useEffect, useState } from "react"
+
+const USER_COUNT_URL = "http://localhost:5000/api/users/count"
+const APPLICATION_COUNTS_URL = "http://localhost:5000/api/applications/counts"
+const LEAVE_COUNT_URL = "http://localhost:5000/api/applications/leave-count"
+
+export default function HightLight() {
+    const [userCount, setUserCount] = useState(null)
+    const [applicationCounts, setApplicationCounts] = useState({
+        pending: null,
+        approved: null,
+        rejected: null
+    })
+    const [leaveCount, setLeaveCount] = useState(null)
+
+    useEffect(() => {
+        let isMounted = true
+
+        const loadUserCount = async () => {
+            try {
+                const response = await fetch(USER_COUNT_URL, { credentials: "include" })
+                if (!response.ok) {
+                    throw new Error("Failed to load user count")
+                }
+                const data = await response.json()
+                const count = data?.totalUsers ?? data?.count ?? data?.data?.count ?? data?.total ?? 0
+                if (isMounted) {
+                    setUserCount(count)
+                }
+            } catch (error) {
+                if (isMounted) {
+                    setUserCount(0)
+                }
+            }
+        }
+
+        const loadApplicationCounts = async () => {
+            try {
+                const response = await fetch(APPLICATION_COUNTS_URL, { credentials: "include" })
+                if (!response.ok) {
+                    throw new Error("Failed to load application counts")
+                }
+                const data = await response.json()
+                if (isMounted) {
+                    setApplicationCounts({
+                        pending: data?.pending ?? 0,
+                        approved: data?.approved ?? 0,
+                        rejected: data?.rejected ?? 0
+                    })
+                }
+            } catch (error) {
+                if (isMounted) {
+                    setApplicationCounts({ pending: 0, approved: 0, rejected: 0 })
+                }
+            }
+        }
+
+        const loadLeaveCount = async () => {
+            try {
+                const response = await fetch(LEAVE_COUNT_URL, { credentials: "include" })
+                if (!response.ok) {
+                    throw new Error("Failed to load leave count")
+                }
+                const data = await response.json()
+                const count = data?.totalUsersOnLeave ?? 0
+                if (isMounted) {
+                    setLeaveCount(count)
+                }
+            } catch (error) {
+                if (isMounted) {
+                    setLeaveCount(0)
+                }
+            }
+        }
+
+        loadUserCount()
+        loadApplicationCounts()
+        loadLeaveCount()
+
+        return () => {
+            isMounted = false
+        }
+    }, [])
+
     return <main>
         <div className="flex justify-between px-10 py-4">
             <div className="flex gap-3 justify-center font-bold px-10 py-4 rounded-2xl shadow-lg">
@@ -11,7 +93,7 @@ export default function HightLight(){
                 </div>
                 <div>
                     <h1>Employees</h1>
-                    <h2 className="font-bold">100</h2>
+                    <h2 className="font-bold">{userCount ?? "--"}</h2>
                 </div>
             </div>
             <div className="flex justify-center gap-3  shadow-lg px-10 py-4 rounded-2xl">
@@ -20,7 +102,7 @@ export default function HightLight(){
                     </div>
                     <div className="">
                         <h1>On Leave</h1>
-                        <h2 className="font-bold">100</h2>
+                        <h2 className="font-bold">{leaveCount ?? "--"}</h2>
                     </div>
             </div>
             <div className="flex justify-center gap-3  shadow-lg px-10 py-4 rounded-2xl">
@@ -29,7 +111,7 @@ export default function HightLight(){
                 </div>
                 <div>
                     <h1>Pending</h1>
-                    <h2 className="font-bold">100</h2>
+                    <h2 className="font-bold">{applicationCounts.pending ?? "--"}</h2>
                 </div>
             </div>
             <div className="flex justify-center gap-3  shadow-lg px-10 py-4 rounded-2xl">
@@ -38,7 +120,7 @@ export default function HightLight(){
                 </div>
                 <div>
                     <h1>Approved</h1>
-                    <h2 className="font-bold">100</h2>
+                    <h2 className="font-bold">{applicationCounts.approved ?? "--"}</h2>
                 </div>
             </div>
             <div className="flex justify-center gap-3  shadow-lg px-10 py-4 rounded-2xl">
@@ -47,7 +129,7 @@ export default function HightLight(){
                 </div>
                 <div>
                     <h1>Rejected</h1>
-                    <h2 className="font-bold">100</h2>
+                    <h2 className="font-bold">{applicationCounts.rejected ?? "--"}</h2>
                 </div>
                 
             </div>
