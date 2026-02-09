@@ -2,6 +2,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { Eye } from "lucide-react";
 import EmployeeDetails from "./EmployeeDetail";
+export default function UserTable(props) {
+    const [Edetails,setEdetails] = useState(false);
+    const hideEdetails = () => setEdetails(false)
+    const employeesList = [
+        { id: 1, Subject: "Medical Leave", Reason: "Doctor appointment", Date: "11/11/2026", status: "Pending" },
+        { id: 2,  Subject: "Casual Leave", Reason: "Family function", Date: "12/11/2026", status: "Approved" },
+        { id: 3, Subject: "Sick Leave", Reason: "Flu symptoms", Date: "13/11/2026", status: "Rejected" }
+    ];
 import resolveProfilePic from "../utils/resolveProfilePic";
 
 const USER_APPLICATIONS_URL = "http://localhost:5000/api/applications/my";
@@ -100,8 +108,8 @@ export default function UserTable({ refreshToken = 0 }) {
     }, [applications]);
 
     return (
-        <main className="p-8 mt-10 bg-slate-50 min-h-screen font-sans">
-            <div className="max-w-full mx-auto bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+        <main className="">
+            <div className="max-w-full mx-auto rounded-xl shadow-lg overflow-hidden">
                 <div className="flex bg-slate-50 border-b border-slate-200 p-4 text-xs uppercase tracking-wider font-bold text-slate-500">
                     <p className="flex-1">Employee</p>
                     <p className="flex-[1.5]">Reason for Leave</p>
@@ -160,14 +168,28 @@ export default function UserTable({ refreshToken = 0 }) {
                                     }}
                                     className="text-slate-400 cursor-pointer p-1 rounded-full hover:bg-indigo-100"
                                     title="View Details"
+
+                                    >
+                                     <Eye onClick={()=> props.setPreview(true)} size={18} />
+                                        
                                 >
                                     <Eye size={18} />
+
                                 </button>
                             </div>
                         </div>
                     ))
                 )}
             </div>
+
+            {/* {Edetails && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-white/30 " onClick={hideEdetails}>
+                         <EmployeeDetails/>
+                    </div>
+                   
+
+            )} */}
+
             {Edetails && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm"

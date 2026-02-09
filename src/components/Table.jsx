@@ -135,6 +135,37 @@ export default function LeaveTables() {
                             </p>
                             <p className="flex-1 text-slate-600 text-sm">{row.date}</p>
 
+                    </div>
+                ))}
+            </div>
+            {showDetails && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/20 p-4"
+                    onClick={hideDetails}
+                >
+
+                    <div
+                        className="relative w-full max-w-lg border border-white/30 p-8 rounded-2xl shadow-2xl backdrop-blur-lg bg-white/40 flex flex-col gap-6"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <EmployeeDetails />
+                        <div className="flex gap-4 mt-4 w-full">
+                            <button
+                                onClick={hideDetails}
+                                className="flex-1 bg-white/50 text-[#2a4e75] border border-[#2a4e75]/20 py-3 rounded-xl font-semibold hover:bg-white/80 transition-all active:scale-95"
+                            >
+                                Reject
+                            </button>
+                            <button
+                                className="flex-1 bg-[#2a4e75] text-white py-3 rounded-xl font-semibold shadow-lg hover:bg-[#1e3a5a] transition-all active:scale-95"
+                            >
+                                Approve
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
                             <div className="w-32 flex justify-center">
                                 <span
                                     className={`px-3 py-1 rounded-full text-[11px] font-bold shadow-sm ${

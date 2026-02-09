@@ -81,7 +81,7 @@ export default function Navbar() {
 
     return (
         <>
-            <main className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+            <main className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm mb-10">
                 <div className="mx-auto flex justify-between items-center py-3 px-10">
                     <div className="flex items-center gap-4">
                         <div className="bg-slate-300 p-2 rounded-full shadow-[0_0_25px_rgba(148,163,184,0.8)] border border-white/20">
