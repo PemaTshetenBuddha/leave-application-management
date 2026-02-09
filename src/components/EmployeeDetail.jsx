@@ -11,20 +11,24 @@ export default function EmployeeDetails() {
     
     return (
        
-        <div className="w-full max-w-md bg-white rounded-xl overflow-hidden">
+        <div className="relative z-50 w-full max-w-md bg-white rounded-xl overflow-hidden">
             
-            {/* Header */}
+           
             <div className="flex items-center gap-4 bg-slate-900 p-6 text-white">
-                <div className="bg-slate-700 p-3 rounded-full">
-                    <User size={24} />
-                </div>
+                <div 
+                    className="bg-slate-700 p-3 rounded-full animate-pulse shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+                    style={{ animationDuration: '6s' }} 
+                >
+                <User size={24} className="text-white" />
+            </div>
+
                 <div>
                     <h1 className="text-xl font-bold tracking-tight">{leaveDetail.Name}</h1>
                     <p className="text-slate-400 text-sm">Employee Leave Record</p>
                 </div>
             </div>
 
-            {/* Dates Grid */}
+           
             <div className="grid grid-cols-2 border-b border-slate-100">
                 <div className="p-5 border-r border-slate-100">
                     <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Leaving Date</p>
@@ -42,7 +46,7 @@ export default function EmployeeDetails() {
                 </div>
             </div>
 
-            {/* Subject */}
+           
             <div className="p-5 border-b border-slate-100">
                 <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Subject</p>
                 <div className="flex items-center gap-2 text-slate-800 font-medium">
@@ -51,7 +55,7 @@ export default function EmployeeDetails() {
                 </div>
             </div>
 
-            {/* Reason */}
+           
             <div className="p-5 bg-slate-50/50">
                 <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Reason for Leave</p>
                 <div className="flex gap-2">

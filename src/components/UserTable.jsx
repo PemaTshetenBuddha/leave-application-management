@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Eye,X } from "lucide-react"; 
 import UserProfile from "./UserProfile";
 import EmployeeDetails from "./EmployeeDetail";
-export default function UserTable() {
+export default function UserTable(props) {
     const [Edetails,setEdetails] = useState(false);
     const hideEdetails = () => setEdetails(false)
     const employeesList = [
@@ -13,8 +13,8 @@ export default function UserTable() {
     ];
 
     return (
-        <main className="p-8 mt-10 bg-slate-50 min-h-screen font-sans">
-            <div className="max-w-full mx-auto bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+        <main className="">
+            <div className="max-w-full mx-auto rounded-xl shadow-lg overflow-hidden">
                 <div className="flex bg-slate-50 border-b border-slate-200 p-4 text-xs uppercase tracking-wider font-bold text-slate-500">
                     <p className="flex-1">Leave Subject</p>
                     <p className="flex-[1.5]">Reason for Leave</p> 
@@ -48,7 +48,7 @@ export default function UserTable() {
                                     className="text-slate-400    cursor-pointer p-1 rounded-full hover:bg-indigo-100 "
                                     title="View Details"
                                     >
-                                     <Eye onClick={()=> setEdetails(true)} size={18} />
+                                     <Eye onClick={()=> props.setPreview(true)} size={18} />
                                         
                                 </button>
                             
@@ -57,13 +57,13 @@ export default function UserTable() {
                     </div>
                 ))}
             </div>
-            {Edetails && (
+            {/* {Edetails && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-white/30 " onClick={hideEdetails}>
                          <EmployeeDetails/>
                     </div>
                    
 
-            )}
+            )} */}
         </main>
     );
 }
